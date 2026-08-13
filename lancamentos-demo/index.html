@@ -156,8 +156,8 @@
   .chip:hover{ border-color: var(--sage); color: var(--cream); }
   .chip.active{ background: var(--coral); border-color: var(--coral); color: #14201f; font-weight:600; }
 
-  /* --- Scanner modal --- */
-  .scanner-overlay{
+  /* --- Modais (scanner e detalhe do produto) --- */
+  .modal-overlay{
     position: fixed; inset:0;
     background: rgba(6,20,20,0.92);
     display:none;
@@ -165,26 +165,35 @@
     z-index: 100;
     padding: 20px;
   }
-  .scanner-overlay.open{ display:flex; }
-  .scanner-box{
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
     background: var(--bg-deep);
     border:1px solid var(--line);
     border-radius: 18px;
     width: 100%;
     max-width: 440px;
-    overflow:hidden;
+    max-height: 88vh;
+    overflow-y:auto;
     position:relative;
   }
-  .scanner-head{
-    display:flex; justify-content:space-between; align-items:center;
-    padding: 16px 18px 12px;
+  .modal-head{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding: 18px 20px 12px;
+    position: sticky; top:0;
+    background: var(--bg-deep);
+    z-index:2;
   }
-  .scanner-head h3{
+  .modal-head h3{
     font-family:'Fraunces', serif; font-size:18px; margin:0; font-weight:600;
+    line-height:1.25;
+    text-transform: capitalize;
+    padding-right: 10px;
   }
-  .scanner-close{
+  .modal-close{
     background:none; border:none; color:var(--cream-dim); font-size:20px; cursor:pointer; line-height:1; padding:4px;
+    flex-shrink:0;
   }
+
   .scanner-viewport{
     position: relative;
     width: 100%;
@@ -227,6 +236,53 @@
     font-family:'Inter', sans-serif;
   }
 
+  /* Página de detalhe do produto */
+  .detail-meta{
+    padding: 0 20px 4px;
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--cream-dim);
+    display:flex; gap:12px; flex-wrap:wrap;
+  }
+  .detail-summary{
+    margin: 14px 20px 4px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .detail-summary .n{ font-family:'Fraunces', serif; font-size: 26px; font-weight:600; }
+  .detail-summary .l{ font-size: 11px; color: var(--cream-dim); text-transform:uppercase; letter-spacing:0.05em; }
+  .detail-list{ padding: 6px 20px 20px; }
+  .detail-list h4{
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color: var(--sage);
+    margin: 16px 0 8px;
+  }
+  .variant-row{
+    display:flex; align-items:center; gap:12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .variant-row:last-child{ border-bottom:none; }
+  .variant-swatch{
+    width:16px; height:16px; border-radius:50%;
+    border: 1px solid rgba(243,236,216,0.3);
+    flex-shrink:0;
+  }
+  .variant-info{ flex:1; min-width:0; }
+  .variant-name{ font-size: 14px; font-weight:600; }
+  .variant-code{ font-family:'Space Mono', monospace; font-size: 10.5px; color: var(--cream-dim); margin-top:2px; }
+  .variant-qty{ font-family:'Space Mono', monospace; font-size: 12px; text-align:right; white-space:nowrap; }
+  .variant-qty.zero{ color: var(--coral); font-weight:700; text-transform:uppercase; font-size:10.5px; }
+  .variant-qty.low{ color: var(--gold); }
+
   .scan-result{
     background: var(--panel-soft);
     border: 1px solid var(--sage);
@@ -234,11 +290,12 @@
     padding: 18px;
     margin-bottom: 24px;
     display:flex;
-    align-items:center;
-    gap: 16px;
+    flex-direction:column;
+    gap: 10px;
     animation: pop 0.25s ease;
   }
   @keyframes pop{ from{ transform: scale(0.97); opacity:0.4;} to{ transform:scale(1); opacity:1;} }
+  .scan-result-head{ display:flex; align-items:flex-start; gap:12px; }
   .scan-result .tag{
     font-family:'Space Mono', monospace;
     font-size: 10px;
@@ -266,6 +323,18 @@
   }
   .scan-result.notfound{ border-color: var(--coral); }
   .scan-result.notfound .tag{ color: var(--coral); }
+  .scan-result .detail-link{
+    align-self:flex-start;
+    background: none;
+    border: 1px solid var(--sage);
+    color: var(--sage);
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 100px;
+    cursor:pointer;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+  }
 
   .month-group{ margin-bottom: 30px; }
   .month-title{
@@ -291,6 +360,7 @@
     align-items:center;
     gap: 16px;
     transition: border-color 0.15s, transform 0.15s;
+    cursor:pointer;
   }
   .card:hover{ border-color: var(--sage); transform: translateX(2px); }
 
@@ -326,6 +396,11 @@
     font-size: 11px;
     color: var(--cream-dim);
     display:flex; gap:14px; flex-wrap:wrap;
+  }
+  .card-chevron{
+    color: var(--cream-dim);
+    font-size: 12px;
+    margin-top: 4px;
   }
 
   .badge{
@@ -391,7 +466,7 @@
   <header>
     <div class="eyebrow">Coleção Demo26 · Loja Modelo</div>
     <h1>Calendário de <em>lançamento</em> das peças</h1>
-    <p class="sub">Busque por código, EAN ou nome da peça — ou escaneie o código de barras da etiqueta com a câmera — para encontrar a data de lançamento.</p>
+    <p class="sub">Busque por código, EAN ou nome da peça, ou escaneie o código de barras. Toque em qualquer peça para ver as cores e a quantidade disponível de cada uma.</p>
     <div class="stats">
       <div class="stat"><div class="n" id="statTotal">–</div><div class="l">Peças na coleção</div></div>
       <div class="stat next"><div class="n" id="statNext">–</div><div class="l">Próximo lançamento</div></div>
@@ -419,12 +494,12 @@
   <footer>Demo26 — dados 100% fictícios, gerados para fins de demonstração</footer>
 </div>
 
-<!-- Scanner modal -->
-<div class="scanner-overlay" id="scannerOverlay">
-  <div class="scanner-box">
-    <div class="scanner-head">
+<!-- Modal: Scanner -->
+<div class="modal-overlay" id="scannerOverlay">
+  <div class="modal-box">
+    <div class="modal-head">
       <h3>Escanear código de barras</h3>
-      <button class="scanner-close" id="closeScanBtn">✕</button>
+      <button class="modal-close" id="closeScanBtn">✕</button>
     </div>
     <div class="scanner-viewport" id="scannerViewport">
       <div class="scan-frame" id="scanFrame"></div>
@@ -436,8 +511,13 @@
   </div>
 </div>
 
+<!-- Modal: Detalhe do produto -->
+<div class="modal-overlay" id="detailOverlay">
+  <div class="modal-box" id="detailBox"></div>
+</div>
+
 <script>
-const DATA = [{"produto": 400000, "cor": 3, "ean": "40000000003", "colecao": "DEMO26", "peca": "Short Jeans Bordado Aurora Boreal", "qtd": 120, "data": "2026-08-18"}, {"produto": 400012, "cor": 58974, "ean": "40001258974", "colecao": "DEMO26", "peca": "Camisa Linho Solta Jardim Selvagem", "qtd": 0, "data": "2026-08-03"}, {"produto": 400012, "cor": 7742, "ean": "40001207742", "colecao": "DEMO26", "peca": "Vestido Curto Estampado Constelacao", "qtd": 0, "data": "2026-09-27"}, {"produto": 400018, "cor": 7806, "ean": "40001807806", "colecao": "DEMO26", "peca": "Top Cropped Amarracao Vento Norte", "qtd": 550, "data": "2026-09-27"}, {"produto": 400036, "cor": 56568, "ean": "40003656568", "colecao": "DEMO26", "peca": "Vestido Longo Florido Mare Alta", "qtd": 120, "data": "2026-08-22"}, {"produto": 400020, "cor": 24, "ean": "40002000024", "colecao": "DEMO26", "peca": "Calca Alfaiataria Reta Deserto Rosa", "qtd": 45, "data": "2026-09-04"}, {"produto": 400072, "cor": 7448, "ean": "40007207448", "colecao": "DEMO26", "peca": "Camisa Seda Estampada Deserto Rosa", "qtd": 0, "data": "2026-10-22"}, {"produto": 400063, "cor": 24, "ean": "40006300024", "colecao": "DEMO26", "peca": "Saia Curta Godê Jardim Selvagem", "qtd": 550, "data": "2026-09-20"}, {"produto": 400032, "cor": 13, "ean": "40003200013", "colecao": "DEMO26", "peca": "Calca Pantalona Constelacao", "qtd": 330, "data": "2026-10-04"}, {"produto": 400054, "cor": 24, "ean": "40005400024", "colecao": "DEMO26", "peca": "Body Canelado Jardim Selvagem", "qtd": 550, "data": "2026-09-04"}, {"produto": 400050, "cor": 56568, "ean": "40005056568", "colecao": "DEMO26", "peca": "Saia Curta Godê Deserto Rosa", "qtd": 330, "data": "2026-08-28"}, {"produto": 400132, "cor": 105, "ean": "40013200105", "colecao": "DEMO26", "peca": "Saia Longa Godê Jardim Selvagem", "qtd": 330, "data": "2026-09-20"}, {"produto": 400108, "cor": 7448, "ean": "40010807448", "colecao": "DEMO26", "peca": "Vestido Tricot Trancado Ilha Perdida", "qtd": 1500, "data": "2026-10-04"}, {"produto": 400039, "cor": 3, "ean": "40003900003", "colecao": "DEMO26", "peca": "Vestido Longo Fenda Deserto Rosa", "qtd": 0, "data": "2026-11-01"}, {"produto": 400098, "cor": 24, "ean": "40009800024", "colecao": "DEMO26", "peca": "Cardigan Trancado Vento Norte", "qtd": 2044, "data": "2026-08-18"}, {"produto": 400150, "cor": 58974, "ean": "40015058974", "colecao": "DEMO26", "peca": "Cardigan Trancado Constelacao", "qtd": 1200, "data": "2026-10-04"}, {"produto": 400080, "cor": 3, "ean": "40008000003", "colecao": "DEMO26", "peca": "Regata Canelada Bosque Encantado", "qtd": 1500, "data": "2026-10-12"}, {"produto": 400204, "cor": 58974, "ean": "40020458974", "colecao": "DEMO26", "peca": "Vestido Longo Ombro So Bosque Encantado", "qtd": 991, "data": "2026-09-27"}, {"produto": 400090, "cor": 7742, "ean": "40009007742", "colecao": "DEMO26", "peca": "Calca Pantalona Constelacao", "qtd": 45, "data": "2026-09-12"}, {"produto": 400095, "cor": 105, "ean": "40009500105", "colecao": "DEMO26", "peca": "Macacao Alcinha Jardim Selvagem", "qtd": 991, "data": "2026-10-22"}, {"produto": 400180, "cor": 89, "ean": "40018000089", "colecao": "DEMO26", "peca": "Calca Wide Leg Vento Norte", "qtd": 1500, "data": "2026-09-12"}, {"produto": 400084, "cor": 7742, "ean": "40008407742", "colecao": "DEMO26", "peca": "Bata Bordada Artesanal Aurora Boreal", "qtd": 550, "data": "2026-10-22"}, {"produto": 400154, "cor": 58974, "ean": "40015458974", "colecao": "DEMO26", "peca": "Macaquinho Listrado Jardim Selvagem", "qtd": 1200, "data": "2026-08-15"}, {"produto": 400253, "cor": 105, "ean": "40025300105", "colecao": "DEMO26", "peca": "Vestido Longo Florido Bosque Encantado", "qtd": 45, "data": "2026-09-20"}, {"produto": 400120, "cor": 56568, "ean": "40012056568", "colecao": "DEMO26", "peca": "Vestido Tubinho Liso Constelacao", "qtd": 120, "data": "2026-10-22"}, {"produto": 400300, "cor": 56568, "ean": "40030056568", "colecao": "DEMO26", "peca": "Vestido Longo Ombro So Aurora Boreal", "qtd": 0, "data": "2026-09-12"}, {"produto": 400182, "cor": 3, "ean": "40018200003", "colecao": "DEMO26", "peca": "Short Jeans Bordado Deserto Rosa", "qtd": 330, "data": "2026-08-03"}, {"produto": 400270, "cor": 24, "ean": "40027000024", "colecao": "DEMO26", "peca": "Vestido Curto Estampado Jardim Selvagem", "qtd": 1500, "data": "2026-10-22"}, {"produto": 400280, "cor": 7742, "ean": "40028007742", "colecao": "DEMO26", "peca": "Blazer Alfaiataria Mare Alta", "qtd": 550, "data": "2026-08-15"}, {"produto": 400174, "cor": 7742, "ean": "40017407742", "colecao": "DEMO26", "peca": "Macacao Longo Amarracao Vento Norte", "qtd": 330, "data": "2026-10-22"}, {"produto": 400240, "cor": 7806, "ean": "40024007806", "colecao": "DEMO26", "peca": "Vestido Tubinho Liso Vento Norte", "qtd": 1200, "data": "2026-09-20"}, {"produto": 400186, "cor": 24, "ean": "40018600024", "colecao": "DEMO26", "peca": "Short Jeans Bordado Constelacao", "qtd": 0, "data": "2026-08-28"}, {"produto": 400096, "cor": 24, "ean": "40009600024", "colecao": "DEMO26", "peca": "Vestido Longo Fenda Constelacao", "qtd": 0, "data": "2026-10-12"}, {"produto": 400099, "cor": 56568, "ean": "40009956568", "colecao": "DEMO26", "peca": "Vestido Longo Fenda Jardim Selvagem", "qtd": 1500, "data": "2026-08-10"}, {"produto": 400340, "cor": 3, "ean": "40034000003", "colecao": "DEMO26", "peca": "Kimono Estampa Tropical Bosque Encantado", "qtd": 120, "data": "2026-09-20"}, {"produto": 400350, "cor": 58974, "ean": "40035058974", "colecao": "DEMO26", "peca": "Vestido Midi Botoes Constelacao", "qtd": 45, "data": "2026-08-18"}, {"produto": 400288, "cor": 58974, "ean": "40028858974", "colecao": "DEMO26", "peca": "Camisa Linho Solta Vento Norte", "qtd": 1200, "data": "2026-09-04"}, {"produto": 400111, "cor": 58974, "ean": "40011158974", "colecao": "DEMO26", "peca": "Macacao Alcinha Jardim Selvagem", "qtd": 800, "data": "2026-10-12"}];
+const STYLES_RAW = [{"produto": 400000, "peca": "Vestido Longo Florido Ilha Perdida", "colecao": "DEMO26", "data": "2026-11-01", "variantes": [{"cor": 7806, "cor_nome": "Amarelo Sol", "ean": "40000007806", "qtd": 120}, {"cor": 7742, "cor_nome": "Vinho", "ean": "40000007742", "qtd": 45}, {"cor": 89, "cor_nome": "Bege", "ean": "40000000089", "qtd": 1200}]}, {"produto": 400037, "peca": "Blusa Manga Bufante Ilha Perdida", "colecao": "DEMO26", "data": "2026-10-04", "variantes": [{"cor": 24, "cor_nome": "Off White", "ean": "40003700024", "qtd": 330}, {"cor": 7806, "cor_nome": "Amarelo Sol", "ean": "40003707806", "qtd": 45}]}, {"produto": 400074, "peca": "Saia Midi Plissada Jardim Selvagem", "colecao": "DEMO26", "data": "2026-09-20", "variantes": [{"cor": 89, "cor_nome": "Bege", "ean": "40007400089", "qtd": 800}]}, {"produto": 400111, "peca": "Macacao Alcinha Ilha Perdida", "colecao": "DEMO26", "data": "2026-10-04", "variantes": [{"cor": 89, "cor_nome": "Bege", "ean": "40011100089", "qtd": 1200}, {"cor": 13, "cor_nome": "Preto", "ean": "40011100013", "qtd": 0}]}, {"produto": 400148, "peca": "Calca Wide Leg Aurora Boreal", "colecao": "DEMO26", "data": "2026-08-03", "variantes": [{"cor": 3, "cor_nome": "Verde Oliva", "ean": "40014800003", "qtd": 0}, {"cor": 89, "cor_nome": "Bege", "ean": "40014800089", "qtd": 991}]}, {"produto": 400185, "peca": "Vestido Curto Estampado Deserto Rosa", "colecao": "DEMO26", "data": "2026-09-12", "variantes": [{"cor": 7742, "cor_nome": "Vinho", "ean": "40018507742", "qtd": 2044}, {"cor": 3, "cor_nome": "Verde Oliva", "ean": "40018500003", "qtd": 330}]}, {"produto": 400222, "peca": "Camisa Linho Solta Ilha Perdida", "colecao": "DEMO26", "data": "2026-08-03", "variantes": [{"cor": 7806, "cor_nome": "Amarelo Sol", "ean": "40022207806", "qtd": 2044}]}, {"produto": 400259, "peca": "Short Jeans Bordado Bosque Encantado", "colecao": "DEMO26", "data": "2026-09-04", "variantes": [{"cor": 2524, "cor_nome": "Coral", "ean": "40025902524", "qtd": 330}]}, {"produto": 400296, "peca": "Blazer Alfaiataria Deserto Rosa", "colecao": "DEMO26", "data": "2026-10-22", "variantes": [{"cor": 7742, "cor_nome": "Vinho", "ean": "40029607742", "qtd": 0}, {"cor": 7448, "cor_nome": "Terracota", "ean": "40029607448", "qtd": 0}]}, {"produto": 400333, "peca": "Regata Canelada Jardim Selvagem", "colecao": "DEMO26", "data": "2026-09-04", "variantes": [{"cor": 7448, "cor_nome": "Terracota", "ean": "40033307448", "qtd": 800}]}, {"produto": 400370, "peca": "Vestido Tricot Trancado Jardim Selvagem", "colecao": "DEMO26", "data": "2026-08-03", "variantes": [{"cor": 3, "cor_nome": "Verde Oliva", "ean": "40037000003", "qtd": 120}]}, {"produto": 400407, "peca": "Jaqueta Jeans Destroyed Aurora Boreal", "colecao": "DEMO26", "data": "2026-09-12", "variantes": [{"cor": 2524, "cor_nome": "Coral", "ean": "40040702524", "qtd": 0}, {"cor": 58974, "cor_nome": "Estampado Floral", "ean": "40040758974", "qtd": 1500}, {"cor": 1071, "cor_nome": "Cinza Mescla", "ean": "40040701071", "qtd": 2044}]}, {"produto": 400444, "peca": "Top Cropped Amarracao Constelacao", "colecao": "DEMO26", "data": "2026-10-22", "variantes": [{"cor": 56568, "cor_nome": "Rosa Claro", "ean": "40044456568", "qtd": 330}, {"cor": 24, "cor_nome": "Off White", "ean": "40044400024", "qtd": 550}]}, {"produto": 400481, "peca": "Calca Alfaiataria Reta Aurora Boreal", "colecao": "DEMO26", "data": "2026-09-04", "variantes": [{"cor": 105, "cor_nome": "Azul Marinho", "ean": "40048100105", "qtd": 120}]}, {"produto": 400518, "peca": "Vestido Longo Fenda Jardim Selvagem", "colecao": "DEMO26", "data": "2026-08-03", "variantes": [{"cor": 7806, "cor_nome": "Amarelo Sol", "ean": "40051807806", "qtd": 991}]}, {"produto": 400555, "peca": "Kimono Estampa Tropical Mare Alta", "colecao": "DEMO26", "data": "2026-10-04", "variantes": [{"cor": 7806, "cor_nome": "Amarelo Sol", "ean": "40055507806", "qtd": 120}, {"cor": 7742, "cor_nome": "Vinho", "ean": "40055507742", "qtd": 45}]}, {"produto": 400592, "peca": "Bata Bordada Artesanal Vento Norte", "colecao": "DEMO26", "data": "2026-10-04", "variantes": [{"cor": 24, "cor_nome": "Off White", "ean": "40059200024", "qtd": 120}, {"cor": 58974, "cor_nome": "Estampado Floral", "ean": "40059258974", "qtd": 0}, {"cor": 2524, "cor_nome": "Coral", "ean": "40059202524", "qtd": 330}]}, {"produto": 400629, "peca": "Saia Longa Gode Bosque Encantado", "colecao": "DEMO26", "data": "2026-08-03", "variantes": [{"cor": 105, "cor_nome": "Azul Marinho", "ean": "40062900105", "qtd": 1500}, {"cor": 58974, "cor_nome": "Estampado Floral", "ean": "40062958974", "qtd": 2044}]}, {"produto": 400666, "peca": "Body Canelado Jardim Selvagem", "colecao": "DEMO26", "data": "2026-08-03", "variantes": [{"cor": 3, "cor_nome": "Verde Oliva", "ean": "40066600003", "qtd": 330}, {"cor": 7806, "cor_nome": "Amarelo Sol", "ean": "40066607806", "qtd": 0}]}, {"produto": 400703, "peca": "Vestido Tubinho Liso Deserto Rosa", "colecao": "DEMO26", "data": "2026-11-01", "variantes": [{"cor": 58974, "cor_nome": "Estampado Floral", "ean": "40070358974", "qtd": 0}, {"cor": 24, "cor_nome": "Off White", "ean": "40070300024", "qtd": 0}]}];
 
 const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 const DIAS = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -469,20 +549,34 @@ function badgeLabel(days, status){
   return `em ${days} dias`;
 }
 
-// Prepara dados enriquecidos
-const items = DATA.map(it => {
-  const d = parseDate(it.data);
+function titleCase(s){
+  return s.toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+}
+
+// Prepara estilos (cada um = uma peça, com N variações de cor)
+const styles = STYLES_RAW.map(st => {
+  const d = parseDate(st.data);
   const days = daysUntil(d);
-  return {...it, dateObj: d, days, status: statusOf(days)};
+  const totalQtd = st.variantes.reduce((s,v) => s + v.qtd, 0);
+  const coresDisponiveis = st.variantes.filter(v => v.qtd > 0).length;
+  return {
+    ...st,
+    dateObj: d,
+    days,
+    status: statusOf(days),
+    totalQtd,
+    coresDisponiveis,
+    totalCores: st.variantes.length,
+  };
 }).sort((a,b) => a.dateObj - b.dateObj);
 
 // Stats
-document.getElementById('statTotal').textContent = items.length;
-const future = items.filter(i => i.days >= 0);
+document.getElementById('statTotal').textContent = styles.length;
+const future = styles.filter(i => i.days >= 0);
 document.getElementById('statNext').textContent = future.length
   ? `${future[0].dateObj.getDate()} ${MESES[future[0].dateObj.getMonth()]}`
   : '—';
-const uniqueDates = new Set(items.map(i => i.data));
+const uniqueDates = new Set(styles.map(i => i.data));
 document.getElementById('statMonths').textContent = uniqueDates.size;
 
 // Filtros por status
@@ -522,18 +616,23 @@ clearBtn.addEventListener('click', () => {
   render();
 });
 
-function titleCase(s){
-  return s.toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+function qtyPillHTML(totalQtd, coresDisponiveis, totalCores){
+  if(totalQtd === 0){
+    return `<div class="qty-pill zero">Esgotado</div>`;
+  }
+  const corTxt = totalCores > 1 ? `${coresDisponiveis}/${totalCores} cores` : `${totalQtd} un.`;
+  const cls = totalQtd < 150 ? 'low' : '';
+  return `<div class="qty-pill ${cls}">${totalQtd} un. · ${corTxt}</div>`;
 }
 
 function render(){
   const q = searchInput.value.trim().toLowerCase();
-  let filtered = items.filter(it => {
-    if(activeFilter !== 'all' && it.status !== activeFilter) return false;
+  let filtered = styles.filter(st => {
+    if(activeFilter !== 'all' && st.status !== activeFilter) return false;
     if(!q) return true;
-    return String(it.produto).includes(q) ||
-           String(it.ean).includes(q) ||
-           it.peca.toLowerCase().includes(q);
+    if(String(st.produto).includes(q)) return true;
+    if(st.peca.toLowerCase().includes(q)) return true;
+    return st.variantes.some(v => v.ean.includes(q) || String(v.cor).includes(q));
   });
 
   const resultsEl = document.getElementById('results');
@@ -545,10 +644,10 @@ function render(){
   }
 
   const groups = {};
-  filtered.forEach(it => {
-    const key = `${it.dateObj.getFullYear()}-${it.dateObj.getMonth()}`;
+  filtered.forEach(st => {
+    const key = `${st.dateObj.getFullYear()}-${st.dateObj.getMonth()}`;
     if(!groups[key]) groups[key] = [];
-    groups[key].push(it);
+    groups[key].push(st);
   });
 
   Object.keys(groups).sort((a,b) => {
@@ -562,40 +661,104 @@ function render(){
     groupEl.className = 'month-group';
     groupEl.innerHTML = `<div class="month-title"><span>${MESES_LONG[m]} ${y}</span><span class="count">${groupItems.length} peça${groupItems.length>1?'s':''}</span></div>`;
 
-    groupItems.forEach(it => {
+    groupItems.forEach(st => {
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <div class="card-date">${it.dateObj.getDate()}<span class="dow">${DIAS[it.dateObj.getDay()]}</span></div>
+        <div class="card-date">${st.dateObj.getDate()}<span class="dow">${DIAS[st.dateObj.getDay()]}</span></div>
         <div class="card-main">
-          <div class="card-name">${titleCase(it.peca)}</div>
+          <div class="card-name">${titleCase(st.peca)}</div>
           <div class="card-meta">
-            <span>Cód. ${it.produto}</span>
-            <span>EAN ${it.ean}</span>
+            <span>Cód. ${st.produto}</span>
           </div>
+          <div class="card-chevron">Ver cores e estoque ›</div>
         </div>
         <div class="badge-col">
-          <div class="badge ${it.status}">${badgeLabel(it.days, it.status)}</div>
-          ${qtyPill(it.qtd)}
+          <div class="badge ${st.status}">${badgeLabel(st.days, st.status)}</div>
+          ${qtyPillHTML(st.totalQtd, st.coresDisponiveis, st.totalCores)}
         </div>
       `;
+      card.addEventListener('click', () => openDetail(st));
       groupEl.appendChild(card);
     });
     resultsEl.appendChild(groupEl);
   });
 }
 
-function qtyPill(qtd){
-  if(qtd === 0){
-    return `<div class="qty-pill zero">Esgotado</div>`;
-  }
-  if(qtd < 150){
-    return `<div class="qty-pill low">${qtd} un. · estoque baixo</div>`;
-  }
-  return `<div class="qty-pill">${qtd} un. disponíveis</div>`;
+render();
+
+/* ================= PÁGINA DE DETALHE DO PRODUTO ================= */
+
+const detailOverlay = document.getElementById('detailOverlay');
+const detailBox = document.getElementById('detailBox');
+
+function variantQtyHTML(qtd){
+  if(qtd === 0) return `<span class="variant-qty zero">Esgotado</span>`;
+  if(qtd < 150) return `<span class="variant-qty low">${qtd} un.</span>`;
+  return `<span class="variant-qty">${qtd} un.</span>`;
 }
 
-render();
+function swatchColor(corNome){
+  const map = {
+    'Preto':'#1a1a1a', 'Off White':'#efe8d8', 'Azul Marinho':'#1c3a5e',
+    'Verde Oliva':'#6b7a4a', 'Terracota':'#c1653f', 'Rosa Claro':'#e8b4c0',
+    'Estampado Floral':'#d67a94', 'Amarelo Sol':'#e8b84b', 'Vinho':'#5c1f2e',
+    'Bege':'#d8c6a8', 'Lilas':'#b6a1c9', 'Coral':'#ff6b6b', 'Cinza Mescla':'#9a9a92',
+  };
+  return map[corNome] || '#8FBFA0';
+}
+
+function openDetail(st){
+  const dateStr = `${st.dateObj.getDate()} de ${MESES_LONG[st.dateObj.getMonth()].toLowerCase()} de ${st.dateObj.getFullYear()}`;
+  const variantesHTML = st.variantes
+    .slice()
+    .sort((a,b) => b.qtd - a.qtd)
+    .map(v => `
+      <div class="variant-row">
+        <div class="variant-swatch" style="background:${swatchColor(v.cor_nome)}"></div>
+        <div class="variant-info">
+          <div class="variant-name">${v.cor_nome}</div>
+          <div class="variant-code">Cor ${v.cor} · EAN ${v.ean}</div>
+        </div>
+        ${variantQtyHTML(v.qtd)}
+      </div>
+    `).join('');
+
+  detailBox.innerHTML = `
+    <div class="modal-head">
+      <h3>${titleCase(st.peca)}</h3>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-meta">
+      <span>Cód. ${st.produto}</span>
+      <span>Coleção ${st.colecao}</span>
+      <span class="badge ${st.status}" style="margin-left:auto;">${badgeLabel(st.days, st.status)}</span>
+    </div>
+    <div class="detail-meta" style="margin-top:2px;">Lançamento: ${dateStr}</div>
+    <div class="detail-summary">
+      <div>
+        <div class="n">${st.totalQtd}</div>
+        <div class="l">unidades no total</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="n">${st.coresDisponiveis}/${st.totalCores}</div>
+        <div class="l">cores disponíveis</div>
+      </div>
+    </div>
+    <div class="detail-list">
+      <h4>Cores e estoque por variação</h4>
+      ${variantesHTML}
+    </div>
+  `;
+  detailOverlay.classList.add('open');
+}
+
+function closeDetail(){
+  detailOverlay.classList.remove('open');
+}
+detailOverlay.addEventListener('click', (e) => {
+  if(e.target === detailOverlay) closeDetail();
+});
 
 /* ================= SCANNER ================= */
 
@@ -676,7 +839,6 @@ function closeScanner(){
     try{ Quagga.stop(); }catch(e){}
     scannerRunning = false;
   }
-  // clear video element leftovers
   scannerViewport.querySelectorAll('video, canvas').forEach(el => el.remove());
   scannerViewport.appendChild(scanFrame);
 }
@@ -685,7 +847,6 @@ function onDetected(result){
   const code = result && result.codeResult && result.codeResult.code;
   if(!code) return;
   const now = Date.now();
-  // debounce: same code within 1.2s ignored, avoid duplicate triggers from live stream
   if(code === lastCode && now - lastCodeTime < 1200) return;
   lastCode = code; lastCodeTime = now;
 
@@ -702,22 +863,25 @@ function findByCode(code){
   const digits = String(code).replace(/\D/g, '');
   const digitsNoLead = digits.replace(/^0+/, '');
 
-  // 1. exact EAN match
-  let m = items.find(it => it.ean === digits || it.ean === digitsNoLead);
-  if(m) return m;
-
-  // 2. one contains the other (extra check digit / leading zero differences)
-  m = items.find(it => digitsNoLead.length >= 6 && (it.ean.endsWith(digitsNoLead) || digitsNoLead.endsWith(it.ean)));
-  if(m) return m;
-
-  // 3. match by produto code (first 6 digits) + cor code
-  m = items.find(it => digits.startsWith(String(it.produto)) );
-  if(m) return m;
-
-  // 4. match by produto code alone
-  m = items.find(it => digitsNoLead === String(it.produto));
-  if(m) return m;
-
+  for(const st of styles){
+    for(const v of st.variantes){
+      if(v.ean === digits || v.ean === digitsNoLead){
+        return {style: st, variant: v};
+      }
+    }
+  }
+  for(const st of styles){
+    for(const v of st.variantes){
+      if(digitsNoLead.length >= 6 && (v.ean.endsWith(digitsNoLead) || digitsNoLead.endsWith(v.ean))){
+        return {style: st, variant: v};
+      }
+    }
+  }
+  for(const st of styles){
+    if(digits.startsWith(String(st.produto))){
+      return {style: st, variant: st.variantes[0]};
+    }
+  }
   return null;
 }
 
@@ -730,30 +894,36 @@ function showScanResult(code, match){
   if(!match){
     slot.innerHTML = `
       <div class="scan-result notfound">
-        <div style="flex:1;">
-          <span class="tag">Código não encontrado</span>
-          <div class="name">${code}</div>
-          <div class="meta">Não consta na coleção carregada. Confira o código ou busque manualmente.</div>
+        <div class="scan-result-head" style="flex:1;">
+          <div style="flex:1;">
+            <span class="tag">Código não encontrado</span>
+            <div class="name">${code}</div>
+            <div class="meta">Não consta na coleção carregada. Confira o código ou busque manualmente.</div>
+          </div>
+          <button class="dismiss" onclick="clearScanResult()">✕</button>
         </div>
-        <button class="dismiss" onclick="clearScanResult()">✕</button>
       </div>`;
     return;
   }
-  const dateStr = `${match.dateObj.getDate()} de ${MESES_LONG[match.dateObj.getMonth()].toLowerCase()} de ${match.dateObj.getFullYear()}`;
-  const qtyText = match.qtd === 0 ? 'Esgotado' : `${match.qtd} un. disponíveis`;
+  const st = match.style;
+  const v = match.variant;
+  const dateStr = `${st.dateObj.getDate()} de ${MESES_LONG[st.dateObj.getMonth()].toLowerCase()} de ${st.dateObj.getFullYear()}`;
+  const qtyText = v.qtd === 0 ? 'Esgotado nesta cor' : `${v.qtd} un. nesta cor`;
   slot.innerHTML = `
     <div class="scan-result">
-      <div style="flex:1;">
-        <span class="tag">Escaneado agora · ${badgeLabel(match.days, match.status)}</span>
-        <div class="name">${titleCase(match.peca)}</div>
-        <div class="meta">
-          <span>Lançamento: ${dateStr}</span>
-          <span>${qtyText}</span>
-          <span>Cód. ${match.produto}</span>
-          <span>EAN ${match.ean}</span>
+      <div class="scan-result-head">
+        <div style="flex:1;">
+          <span class="tag">Escaneado agora · ${badgeLabel(st.days, st.status)}</span>
+          <div class="name">${titleCase(st.peca)}</div>
+          <div class="meta">
+            <span>Cor: ${v.cor_nome}</span>
+            <span>${qtyText}</span>
+            <span>Lançamento: ${dateStr}</span>
+          </div>
         </div>
+        <button class="dismiss" onclick="clearScanResult()">✕</button>
       </div>
-      <button class="dismiss" onclick="clearScanResult()">✕</button>
+      <button class="detail-link" onclick="openDetail(styles.find(s => s.produto === ${st.produto}))">Ver todas as cores ›</button>
     </div>`;
   slot.scrollIntoView({behavior:'smooth', block:'start'});
 }
