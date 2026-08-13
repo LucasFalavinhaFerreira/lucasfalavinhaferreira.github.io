@@ -342,6 +342,26 @@
   .badge.future{ background: var(--sage-dim); color: var(--sage); }
   .badge.past{ background: rgba(243,236,216,0.08); color: var(--cream-dim); }
 
+  .badge-col{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:6px;
+  }
+  .qty-pill{
+    font-family:'Space Mono', monospace;
+    font-size: 10.5px;
+    color: var(--cream-dim);
+    white-space:nowrap;
+  }
+  .qty-pill.low{ color: var(--gold); }
+  .qty-pill.zero{
+    color: var(--coral);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+  }
+
   .empty{
     text-align:center;
     padding: 60px 20px;
@@ -554,12 +574,25 @@ function render(){
             <span>EAN ${it.ean}</span>
           </div>
         </div>
-        <div class="badge ${it.status}">${badgeLabel(it.days, it.status)}</div>
+        <div class="badge-col">
+          <div class="badge ${it.status}">${badgeLabel(it.days, it.status)}</div>
+          ${qtyPill(it.qtd)}
+        </div>
       `;
       groupEl.appendChild(card);
     });
     resultsEl.appendChild(groupEl);
   });
+}
+
+function qtyPill(qtd){
+  if(qtd === 0){
+    return `<div class="qty-pill zero">Esgotado</div>`;
+  }
+  if(qtd < 150){
+    return `<div class="qty-pill low">${qtd} un. · estoque baixo</div>`;
+  }
+  return `<div class="qty-pill">${qtd} un. disponíveis</div>`;
 }
 
 render();
@@ -700,13 +733,14 @@ function showScanResult(code, match){
         <div style="flex:1;">
           <span class="tag">Código não encontrado</span>
           <div class="name">${code}</div>
-          <div class="meta">Não consta na coleção VER27 carregada. Confira o código ou busque manualmente.</div>
+          <div class="meta">Não consta na coleção carregada. Confira o código ou busque manualmente.</div>
         </div>
         <button class="dismiss" onclick="clearScanResult()">✕</button>
       </div>`;
     return;
   }
   const dateStr = `${match.dateObj.getDate()} de ${MESES_LONG[match.dateObj.getMonth()].toLowerCase()} de ${match.dateObj.getFullYear()}`;
+  const qtyText = match.qtd === 0 ? 'Esgotado' : `${match.qtd} un. disponíveis`;
   slot.innerHTML = `
     <div class="scan-result">
       <div style="flex:1;">
@@ -714,6 +748,7 @@ function showScanResult(code, match){
         <div class="name">${titleCase(match.peca)}</div>
         <div class="meta">
           <span>Lançamento: ${dateStr}</span>
+          <span>${qtyText}</span>
           <span>Cód. ${match.produto}</span>
           <span>EAN ${match.ean}</span>
         </div>
